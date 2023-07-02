@@ -1,0 +1,88 @@
+#!/bin/bash
+source "./utils/common.sh"
+
+title_id="0100B2C016252000"
+dev_dir="."
+game_dir="${dev_dir}/${title_id}/romfs"
+
+backup_name="romfs.backup"
+backup_dir="${dev_dir}/${backup_name}"
+archive_dir="${dev_dir}/archives"
+
+
+# main loop
+valid_input=0
+target_index="$1"
+while [ "${valid_input}" -eq 0 ]; do
+  echo ""
+  echo -n "Populating available backups... "
+  available=()
+  # get backup folder, if available
+  [ -d "${backup_dir}" ] && available+=("${backup_dir}")
+  # iterate through archives and add them to the array
+  IFS=$'\n'
+  available+=($(find "${archive_dir}" -mindepth 1 -maxdepth 1 -type d | sort -V))
+  unset IFS
+
+  # ensure requisite folders are present
+  if [ "${#available[@]}" -eq 0 ]; then
+    echo ""
+    error "No backups or archives can be found. Exiting."
+    exit 13
+  fi
+  success "Done."
+
+  index=1
+  # only the backup folder should have an index of 0
+  [ -d "${backup_dir}" ] && index=0
+
+  # ensure the input isn't already set from the command args
+  if [ -z "${target_index}" ]; then
+    # list available backups and archives
+    echo "Available backups:"
+    for backup in ${available[@]}; do
+      # skip the base archive dir
+      echo "${index}: ${backup}"
+      index=$((index + 1))
+    done
+
+    # get user input
+    echo ""
+    read -p "Enter backup number to restore: " target_index
+  fi
+
+  # check input
+  # this can error, so pipe to null, which will skip the rest of the if statement
+  if [ "${target_index}" -ge 0 ] 2> /dev/null; then
+    # ensure 0 is only selected when the backup dir is present
+    if [[ ! -d "${backup_dir}" && "${target_index}" -gt "0" ]] || [[ -d "${backup_dir}" && "${target_index}" -ge "0" ]]; then
+      # decrement selection by one if the backup dir is missing, to make it 0-indexed
+      [[ ! "${target_index}" -eq 0 && ! -d "${backup_dir}" ]] && target_index=$((target_index - 1))
+
+      # ensure the index correctly points to an array entry
+      if [ -n "${available[target_index]:-}" ]; then
+        break
+      fi
+    fi
+  fi
+
+  # fall back to repeating the loop
+  warning "Invalid selection."
+  target_index=""
+done
+
+# restore selected backup
+echo -n "Restoring ${available[target_index]}... "
+mkdir -p "${game_dir}"
+rm -rf "${game_dir}"
+# only destructively restore the finalize backup
+if [[ "${target_index}" -eq 0 && -d "${backup_dir}" ]]; then
+  mv "${available[target_index]}" "${game_dir}"
+# don't destructively restore archives
+else
+  cp -R "${available[target_index]}" "${game_dir}"
+fi
+success "Done."
+
+echo ""
+success "Finished!"
