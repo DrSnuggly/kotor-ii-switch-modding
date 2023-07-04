@@ -1,5 +1,5 @@
 #!/bin/bash
-source "./utils/common.sh"
+source "./bin/util/common.sh"
 
 root_archive_dir="./archives"
 
