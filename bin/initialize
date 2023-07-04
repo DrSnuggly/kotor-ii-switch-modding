@@ -85,5 +85,6 @@ cp -n "${assets_dir}/dialog.tlk" "${game_dir}/dialog.tlk" && count=$((count + 1)
 cp -n "${assets_dir}/swplayer.ini" "${game_dir}/swplayer.ini" && count=$((count + 1))
 echo -e "Copied ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
+
 echo ""
 success "Finished!"

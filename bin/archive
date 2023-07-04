@@ -38,5 +38,6 @@ echo -n "Archiving the backup... "
 cp -R "${game_dir}" "${target_archive_dir}"
 success "Done."
 
+
 echo ""
 success "Finished!"
