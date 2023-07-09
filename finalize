@@ -1,0 +1,183 @@
+#!/bin/bash
+source "./utils/common.sh"
+
+# game files and folder lists, as they appear in the Switch version of the game
+switch_files="${file_list_dir}/switch-files.txt"
+switch_folders="${file_list_dir}/switch-folders.txt"
+
+# game override textures directory, Switch game version only
+override_textures_prefix="${override_prefix}/textures"
+override_textures_dir="${game_dir}/${override_textures_prefix}"
+
+# game override 2DA directory, Switch game version only
+override_2da_prefix="${override_prefix}/2DA"
+override_2da_dir="${game_dir}/${override_2da_prefix}"
+
+
+echo ""
+echo -n "Running pre-flight checks... "
+common_preflight
+# ensure resulting folders aren't present
+if is_finalized; then
+  echo ""
+  error "Cannot finalize a finalized game folder, please restore a backup or archive before continuing. Exiting." \
+    | fold -s
+  exit 1
+fi
+# ensure requisite files are present
+if [ ! -f "${switch_files}" ]; then
+  echo ""
+  error "${switch_files} cannot be found. Exiting."
+  exit 20
+fi
+if [ ! -f "${switch_folders}" ]; then
+  echo ""
+  error "${switch_folders} cannot be found. Exiting."
+  exit 21
+fi
+success "Done."
+
+echo -n "Backing up to ${backup_dir}... "
+# remove existing backup
+rm -rf "${backup_dir}"
+cp -R "${game_dir}" "${backup_dir}"
+# ensure the backup completed properly
+[ ! -d "${backup_dir}" ] && echo "${backup_dir} cannot be found. Exiting." && exit 230
+success "Done."
+
+
+echo ""
+echo -n "Mirroring Switch ROM folder structure... "
+count=0
+while IFS= read -r target_unprefixed_path; do
+  # don't use mkdir -p, so we get an accurate count
+  mkdir "${game_dir}/${target_unprefixed_path}" 2> /dev/null && count=$((count + 1))
+done < "${switch_folders}"
+echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folders."
+
+
+base_status="Moving all files matching a pre-existing ROM file"
+echo -n "${base_status}..."
+found=0
+skipped=0
+count=0
+while IFS= read -r current_file_path; do
+  found=$((found + 1))
+  printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}skipped: ${skipped}${RESTORE_TEXT} / found ${found} ]... "
+  current_unprefixed_filename=$(basename "${current_file_path}")
+
+  # add preceeding slash to avoid matching filenames that are substings of other file names
+  target_unrooted_path=$(grep -iF "/${current_unprefixed_filename}" "${switch_files}")
+  # ensure there was actually a match
+  [ -z "${target_unrooted_path}" ] && continue
+
+  # ensure the file isn't already in the target destination
+  if [ "${current_file_path#"${game_dir}/"}" == "${target_unrooted_path#"./"}" ]; then
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  # if passed all checks, move the file
+  mv "${current_file_path}" "${game_dir}/${target_unrooted_path}" && count=$((count + 1))
+done < <(find "${game_dir}" -type f)
+success "Done."
+
+echo ""
+echo -n "Moving remaining non-GUI texture files into override textures folder... "
+mkdir -p "${override_textures_dir}"
+# iterate over all texture files and move any that shouldn't stay in the override folder
+count=0
+while IFS= read -r source_path; do
+  source_unrooted_path="${source_path#"${game_dir}"}"
+  # use grep -q since we don't use the output for anything, only checking the file existence
+  grep -qicF "${source_unrooted_path}" "${switch_files}" && continue
+  source_basename=$(basename "${source_path}")
+  mv "${source_path}" "${override_textures_dir}/${source_basename}" && count=$((count + 1))
+done < <(
+  find "${override_dir}" -maxdepth 1 -type f \( -iname "*.tga" -o -iname "*.txi" -o -iname "*.tpc" \)
+)
+echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+
+echo -n "Moving remaining 2DA files into override 2DA folder... "
+mkdir -p "${override_2da_dir}"
+# move all .2da files to the root override subfolder
+count=0
+while IFS= read -r source_path; do
+  source_basename=$(basename "${source_path}")
+  mv "${source_path}" "${override_2da_dir}/${source_basename}" && count=$((count + 1))
+done < <(
+  find "${override_dir}" -maxdepth 1 -type f -iname "*.2da"
+)
+echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+
+echo -n "Copying duplicated Switch ROM files... "
+count=0
+target_filename="d2xfnt_d16x16b.txi"
+if [ -f "${override_dir}/${target_filename}" ]; then
+  cp "${override_dir}/${target_filename}" "${override_textures_dir}/${target_filename}" && count=$((count + 1))
+elif [ -f "${override_textures_dir}/${target_filename}" ]; then
+  cp "${override_textures_dir}/${target_filename}" "${override_dir}/${target_filename}" && count=$((count + 1))
+fi
+echo -e "Copied ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+
+target_filename="d2xfnt_d16x16b.tga"
+if [[ -f "${override_dir}/${target_filename}" || -f "${override_textures_dir}/${target_filename}" ]]; then
+  echo ""
+  warning "===================================== NOTE ====================================="
+  warning "NOTE: this script does not duplicate the file ${target_filename} in ./${override_prefix}/ or ./${override_textures_prefix}/, since the original Switch ROM has different hashes for these files. Copy this file manually if needed." | fold -s
+  warning "================================================================================"
+fi
+
+
+echo ""
+echo -n "Moving remaining Docs contents to localized folders... "
+count=0
+while IFS= read -r source_path; do
+  source_unrooted_path="${source_path#"${game_dir}/"}"
+  target_path="${localized_dir}/${source_unrooted_path}"
+  target_dir="$(dirname "${target_path}")"
+
+  # ensure folder exists, needed for new content
+  mkdir -p "${target_dir}"
+  mv "${source_path}" "${target_path}" && count=$((count + 1))
+done < <(find "${game_dir}/Docs" -type f 2> /dev/null)
+echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
+
+echo -n "Moving remaining StreamVoice contents to localized folders... "
+count=0
+while IFS= read -r source_path; do
+  source_unrooted_path="${source_path#"${game_dir}/"}"
+  target_path="${localized_dir}/${source_unrooted_path}"
+  target_dir="$(dirname "${target_path}")"
+
+  # ensure folder exists, needed for new content
+  mkdir -p "${target_dir}"
+  mv "${source_path}" "${localized_dir}/${source_unrooted_path}" && count=$((count + 1))
+done < <(find "${game_dir}/StreamVoice" -type f 2> /dev/null)
+echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
+
+echo -n "Moving remaining lips contents to localized folders... "
+count=0
+while IFS= read -r source_path; do
+  source_unrooted_path="${source_path#"${game_dir}/"}"
+  target_path="${localized_dir}/${source_unrooted_path}"
+  target_dir="$(dirname "${target_path}")"
+
+  # ensure folder exists, needed for new content
+  mkdir -p "${target_dir}"
+  mv "${source_path}" "${target_path}" && count=$((count + 1))
+done < <(find "${game_dir}/lips" -type f 2> /dev/null)
+echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
+
+
+echo ""
+echo -n "Cleaning up empty folders... "
+count=0
+while IFS= read -r target_folder; do
+  rm -r "${target_folder}" && count=$((count + 1))
+done < <(find "${game_dir}" -mindepth 1 -type d -empty)
+echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
+
+
+echo ""
+success "Finished!"
