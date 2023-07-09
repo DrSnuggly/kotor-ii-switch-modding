@@ -1,14 +1,16 @@
 # KotOR II Switch modding tools
 
 This project is a group of tools to make modding the Nintendo Switch version of
-Star Wars: Knights of the Old Republic II (aka. KotOR II) easier and less
-confusing.
+Star Wars: Knights of the Old Republic II (aka. KotOR II) easier, less
+confusing, and less cumbersome.
 
 These scripts are by no means necessary, but they will help prevent common
-issues that can occur.
+issues that can occur, especially when dealing with `.tpc` files and localized
+folders on the Nintendo Switch vs. normal KotOR 2 overrides.
 
 Based on and inspired by
 [jacqylfrost](https://deadlystream.com/profile/48469-jacqylfrost/)'s work!
+Appreciate your insight as I worked through this.
 
 **NOTE**: these modding tools will ONLY work for modded Nintendo Switches.
 
