@@ -84,22 +84,26 @@ skipped=0
 count=0
 while IFS= read -r current_file_path; do
   found=$((found + 1))
-  printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}skipped: ${skipped}${RESTORE_TEXT} / found ${found} ]... "
   current_unprefixed_filename=$(basename "${current_file_path}")
 
   # add preceeding slash to avoid matching filenames that are substings of other file names
   target_unrooted_path=$(grep -iF "/${current_unprefixed_filename}" "${switch_files}")
   # ensure there was actually a match
-  [ -z "${target_unrooted_path}" ] && continue
+  if [ -z "${target_unrooted_path}" ]; then
+    printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}skipped: ${skipped}${RESTORE_TEXT} / found ${found} ]... "
+    continue
+  fi
 
   # ensure the file isn't already in the target destination
   if [ "${current_file_path#"${game_dir}/"}" == "${target_unrooted_path#"./"}" ]; then
     skipped=$((skipped + 1))
+    printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}skipped: ${skipped}${RESTORE_TEXT} / found ${found} ]... "
     continue
   fi
 
   # if passed all checks, move the file
   mv "${current_file_path}" "${game_dir}/${target_unrooted_path}" && count=$((count + 1))
+  printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}skipped: ${skipped}${RESTORE_TEXT} / found ${found} ]... "
 done < <(find "${game_dir}" -type f)
 success "Done."
 
