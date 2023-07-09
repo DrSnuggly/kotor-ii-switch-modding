@@ -158,7 +158,7 @@ that this project uses the GNU GPL v3 license. You can view a
 [layman's terms breakdown](https://www.gnu.org/licenses/quick-guide-gplv3.en.html)
 of the license, but the most important thing to note is that **any** projects
 or distributions that modify or include code from this project must **also**
-have their source code published and publicly available.
+have their source code published and publicly available with the same license.
 
 Please don't hesitate to contact me if this causes major issues for a mod
 you're creating.
