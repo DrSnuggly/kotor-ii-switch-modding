@@ -47,6 +47,11 @@ success "Done."
 
 
 echo ""
+echo -n "Writing status to canary file..."
+date > "${finalized_canary}"
+success "Done."
+
+
 echo -n "Mirroring Switch ROM folder structure... "
 count=0
 while IFS= read -r target_unprefixed_path; do
