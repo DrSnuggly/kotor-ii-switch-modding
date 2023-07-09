@@ -6,7 +6,6 @@ title_id="0100B2C016252000"
 game_root_base_name="romfs"
 game_dir="./${title_id}/${game_root_base_name}"
 finalized_canary="${game_dir}/.finalized"
-assets_dir="./supporting-assets" 
 # where to store backups of the romfs folder
 backup_dir="./${game_root_base_name}.backup"
 # directory for the collection of file lists

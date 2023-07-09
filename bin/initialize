@@ -16,23 +16,6 @@ if is_finalized; then
     | fold -s
   exit 1
 fi
-# ensure requisite folders are present
-if [ ! -d "${assets_dir}" ]; then
-  echo ""
-  error "${assets_dir} cannot be found. Exiting."
-  exit 12
-fi
-# ensure requisite files are present
-if [ ! -f "${assets_dir}/dialog.tlk" ]; then
-  echo ""
-  error "${assets_dir}/dialog.tlk cannot be found. Exiting."
-  exit 22
-fi
-if [ ! -f "${assets_dir}/swplayer.ini" ]; then
-  echo ""
-  error "${assets_dir}/swplayer.ini cannot be found. Exiting."
-  exit 23
-fi
 echo "Done."
 
 
@@ -76,12 +59,6 @@ while IFS= read -r target_unprefixed_path; do
   mkdir "${game_dir}/${target_unprefixed_path}" 2> /dev/null && count=$((count + 1))
 done < "${pc_folders}"
 echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
-
-echo -n "Copying assets... "
-count=0
-cp -n "${assets_dir}/dialog.tlk" "${game_dir}/dialog.tlk" && count=$((count + 1))
-cp -n "${assets_dir}/swplayer.ini" "${game_dir}/swplayer.ini" && count=$((count + 1))
-echo -e "Copied ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
 
 echo ""
