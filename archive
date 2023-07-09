@@ -1,0 +1,42 @@
+#!/bin/bash
+source "./utils/common.sh"
+
+root_archive_dir="./archives"
+
+
+echo ""
+echo -n "Running pre-flight checks... "
+common_preflight
+# ensure resulting folders aren't present
+if is_finalized; then
+  echo ""
+  error "Cannot archive a finalized game folder, please restore a backup or archive before continuing. Exiting." \
+    | fold -s
+  exit 1
+fi
+# ensure the base archive directory exists
+[ ! -d "${root_archive_dir}" ] && mkdir -p "${root_archive_dir}"
+success "Done."
+
+echo ""
+echo -n "Generating next backup name... "
+# figure out the next backup number
+highest_number=$(find "${root_archive_dir}" -maxdepth 1 -name "${game_root_base_name}.*" -print | \
+  sort -rV  | head -n1 | grep -Eo "${game_root_base_name}\.(\d+)" | grep -Eo "\d+") 2>/dev/null || true
+# fall back to "1" if no file found
+[ -z "${highest_number}" ] && highest_number="0"
+next_number=$((highest_number + 1))
+
+# build the target backup directory name
+target_archive_dir="${root_archive_dir}/${game_root_base_name}.${next_number}"
+# if an argument was provided, use it as a suffix
+[ ! -z "$1" ] && target_archive_dir="${target_archive_dir}.$1"
+success "Done."
+
+# rename the source backup directory to the target
+echo -n "Archiving the backup... "
+cp -R "${game_dir}" "${target_archive_dir}"
+success "Done."
+
+echo ""
+success "Finished!"
