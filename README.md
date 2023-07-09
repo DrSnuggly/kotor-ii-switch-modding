@@ -170,8 +170,8 @@ guidelines for commit messages.
 
 ## Usage in other mods
 
-Feel free to reference this mod in any other projects. However, please note
-that this project uses the GNU GPL v3 license. You can view a
+Feel free to reference or link this mod to any other projects. However, please
+note that this project uses the GNU GPL v3 license. You can view a
 [layman's terms breakdown](https://www.gnu.org/licenses/quick-guide-gplv3.en.html)
 of the license, but the most important thing to note is that **any** projects
 or distributions that modify or include code from this project must **also**
