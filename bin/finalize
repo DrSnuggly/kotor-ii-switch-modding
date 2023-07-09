@@ -9,6 +9,9 @@ switch_folders="${file_list_dir}/switch-folders.txt"
 override_textures_prefix="${override_prefix}/textures"
 override_textures_dir="${game_dir}/${override_textures_prefix}"
 
+# invalid override textures directory
+invalid_override_textures_dir="${override_textures_dir}/_INVALID"
+
 # game override 2DA directory, Switch game version only
 override_2da_prefix="${override_prefix}/2DA"
 override_2da_dir="${game_dir}/${override_2da_prefix}"
@@ -35,6 +38,7 @@ if [ ! -f "${switch_folders}" ]; then
   error "${switch_folders} cannot be found. Exiting."
   exit 21
 fi
+was_warned="n"
 success "Done."
 
 
@@ -113,17 +117,70 @@ base_status="Moving non-GUI texture files"
 echo -n "${base_status}..."
 mkdir -p "${override_textures_dir}"
 # iterate over all texture files and move any that shouldn't stay in the override folder
+found=0
+invalid=0
 count=0
-while IFS= read -r source_path; do
-  source_unrooted_path="${source_path#"${game_dir}"}"
-  # use grep -q since we don't use the output for anything, only checking the file existence
-  grep -qicF "${source_unrooted_path}" "${switch_files}" && continue
-  source_basename=$(basename "${source_path}")
-  mv "${source_path}" "${override_textures_dir}/${source_basename}" && count=$((count + 1))
+override_issues=()
+while IFS= read -r current_file_path; do
+  found=$((found + 1))
+
+  # get current filename details for later comparison
+  current_unprefixed_filename=$(basename "${current_file_path}")
+  # get file extension and ensure it's lowercase
+  current_file_extension=$(echo -n "${current_unprefixed_filename##*.}" | tr '[:upper:]' '[:lower:]')
+
+  # add preceeding slash to avoid matching filenames that are substings of other file names
+  target_unrooted_path=$(grep -iF "/${current_unprefixed_filename}" "${switch_files}")
+  # determine if there will be an extension override issue if no match was found
+  if [[ -z "${target_unrooted_path}" && "${current_file_extension}" == "tga" ]]; then
+    current_file_basename="${current_unprefixed_filename%.*}"
+    # search again using .tpc as the extensions, since .tpc will always override .tga
+    # use grep -q since we don't use the output for anything, only checking the exit code
+    if grep -qiF "/${current_file_basename}.tpc" "${switch_files}"; then
+      invalid=$((invalid + 1))
+      override_issues+=("${current_file_path#"${game_dir}"}")
+      # remove since we don't want unused files in finalized structure
+      mkdir -p "${invalid_override_textures_dir}"
+      mv "${current_file_path}" "${invalid_override_textures_dir}/${current_unprefixed_filename}"
+      # also copy the related .txi file, if present
+      cp "${current_file_basename}.txi" "${invalid_override_textures_dir}/${current_file_basename}.txi" 2> /dev/null
+      printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}invalid: ${invalid}${RESTORE_TEXT} / found ${found} ]... "
+      continue
+    fi
+  fi
+
+  # if passed all checks, move the file
+  mv "${current_file_path}" "${override_textures_dir}/${current_unprefixed_filename}" && count=$((count + 1))
+  printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}invalid: ${invalid}${RESTORE_TEXT} / found ${found} ]... "
 done < <(
-  find "${override_dir}" -maxdepth 1 -type f \( -iname "*.tga" -o -iname "*.txi" -o -iname "*.tpc" \)
+  find "${override_dir}" -maxdepth 1 -type f \( -iname "*.tga" -o -iname "*.txi" -o -iname "*.tpc" -o -iname "*.dds" \)
 )
-echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+# return results based on how many override issues there were
+if [ "${#override_issues[@]}" -gt 0 ]; then
+  was_warned="y"
+  warning "Done with issues."
+  echo ""
+  warning "=================================== WARNINGS ==================================="
+  warning "The following texture(s) have been moved to ${invalid_override_textures_dir} due to how the game prioritizes .tpc files over all other formats. The Switch version of the game already has a .tpc file with the same name as these file(s) in the override folder, so the below file(s) would have always been overridden." | fold -s
+  echo ""
+  for override_issue in "${override_issues[@]}"; do
+    warning "${override_issue}"
+  done
+  echo ""
+  warning "To resolve this:"
+  warning " - Move the ${override_textures_dir}/_INVALID folder outside of the game folder" | fold -s
+  warning " - Restore this build from backup using ./bin/restore"
+  warning " - Convert the above files to .tpc manually"
+  warning " - > e.g. https://deadlystream.com/files/file/1152-tga2tpc/"
+  warning " - Move the converted files to the ${override_dir} folder" | fold -s
+  warning " - Finalize the build again"
+  warning " - Ignore this error, then delete the ${invalid_override_textures_dir} folder" | fold -s
+  warning "================================================================================"
+  echo ""
+else
+  success "Done."
+fi
+
 
 echo -n "Moving 2DA files into override 2DA folder... "
 mkdir -p "${override_2da_dir}"
@@ -150,6 +207,7 @@ echo -e "Copied ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
 target_filename="d2xfnt_d16x16b.tga"
 if [[ -f "${override_dir}/${target_filename}" || -f "${override_textures_dir}/${target_filename}" ]]; then
+  was_warned="y"
   echo ""
   warning "===================================== NOTE ====================================="
   warning "NOTE: this script does not duplicate the file ${target_filename} in ./${override_prefix}/ or ./${override_textures_prefix}/, since the original Switch ROM has different hashes for these files. Copy this file manually if needed." | fold -s
@@ -210,4 +268,8 @@ echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
 
 
 echo ""
-success "Finished!"
+if [ "$was_warned" == "y" ]; then
+  warning "Finished with warnings, please see output above."
+else
+  success "Finished!"
+fi
