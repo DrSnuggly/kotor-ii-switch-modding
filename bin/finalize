@@ -139,34 +139,34 @@ count=0
 override_issues=()
 while IFS= read -r current_file_path; do
   found=$((found + 1))
-
   # get current filename details for later comparison
   current_unprefixed_filename=$(basename "${current_file_path}")
-  # get file extension and ensure it's lowercase
-  current_file_extension=$(echo -n "${current_unprefixed_filename##*.}" | tr '[:upper:]' '[:lower:]')
 
   # add preceeding slash to avoid matching filenames that are substings of other file names
   target_unrooted_path=$(grep -iF "/${current_unprefixed_filename}" "${switch_files}")
   # determine if there will be an extension override issue if no match was found
-  if [[ -z "${target_unrooted_path}" && "${current_file_extension}" == "tga" ]]; then
-    current_file_basename="${current_unprefixed_filename%.*}"
+  if [[ -z "${target_unrooted_path}" ]]; then
+    current_unprefixed_file_basename="${current_unprefixed_filename%.*}"
+
     # search again using .tpc as the extensions, since .tpc will always override .tga
     # use grep -q since we don't use the output for anything, only checking the exit code
-    if grep -qiF "/${current_file_basename}.tpc" "${switch_files}"; then
+    if grep -qiF "/${current_unprefixed_file_basename}.tpc" "${switch_files}"; then
       invalid=$((invalid + 1))
       override_issues+=("${current_file_path#"${game_dir}"}")
+
+      current_file_basename="${current_file_path%.*}"
       # remove since we don't want unused files in finalized structure
       mkdir -p "${invalid_override_textures_dir}"
       mv "${current_file_path}" "${invalid_override_textures_dir}/${current_unprefixed_filename}"
-      # also move the related .txi file, if present, since the .tpc should incorporate it
-      mv "${current_file_basename}.txi" "${invalid_override_textures_dir}/${current_file_basename}.txi" 2> /dev/null
+
       printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}invalid: ${invalid}${RESTORE_TEXT} / found ${found} ]... "
       continue
     fi
   fi
 
   # if passed all checks, move the file
-  mv "${current_file_path}" "${override_textures_dir}/${current_unprefixed_filename}" && count=$((count + 1))
+  # pipe errors to /dev/null since we may have already moved the .txi file above
+  mv "${current_file_path}" "${override_textures_dir}/${current_unprefixed_filename}" 2> /dev/null && count=$((count + 1))
   printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}invalid: ${invalid}${RESTORE_TEXT} / found ${found} ]... "
 done < <(
   find "${override_dir}" -maxdepth 1 -type f \( -iname "*.tga" -o -iname "*.txi" -o -iname "*.tpc" -o -iname "*.dds" \)
