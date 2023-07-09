@@ -142,8 +142,8 @@ while IFS= read -r current_file_path; do
       # remove since we don't want unused files in finalized structure
       mkdir -p "${invalid_override_textures_dir}"
       mv "${current_file_path}" "${invalid_override_textures_dir}/${current_unprefixed_filename}"
-      # also copy the related .txi file, if present
-      cp "${current_file_basename}.txi" "${invalid_override_textures_dir}/${current_file_basename}.txi" 2> /dev/null
+      # also move the related .txi file, if present, since the .tpc should incorporate it
+      mv "${current_file_basename}.txi" "${invalid_override_textures_dir}/${current_file_basename}.txi" 2> /dev/null
       printf "\r${base_status} [ ${SUCCESS_TEXT}moved: ${count}${RESTORE_TEXT} / ${WARNING_TEXT}invalid: ${invalid}${RESTORE_TEXT} / found ${found} ]... "
       continue
     fi
