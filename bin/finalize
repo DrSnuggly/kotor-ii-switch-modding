@@ -72,7 +72,6 @@ fi
 echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
 
-echo ""
 echo -n "Mirroring Switch ROM folder structure... "
 count=0
 while IFS= read -r target_unprefixed_path; do
@@ -80,6 +79,23 @@ while IFS= read -r target_unprefixed_path; do
   mkdir "${game_dir}/${target_unprefixed_path}" 2> /dev/null && count=$((count + 1))
 done < "${switch_folders}"
 echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
+
+
+echo ""
+echo -n "Removing redundant textures... "
+count=0
+while IFS= read -r current_file_path; do
+  current_file_basename="${current_file_path%.*}"
+  # check if corresponding .txi file exists and remove it if so
+  if [[ -f "${current_file_basename}.txi" || -f "${current_file_basename}.TXI" ]]; then
+    rm "${current_file_basename}.txi" && count=$((count + 1))
+  fi
+  # check if corresponding .tga file exists and remove it if so
+  if [[ -f "${current_file_basename}.tga" || -f "${current_file_basename}.TGA" ]]; then
+    rm "${current_file_basename}.tga" && count=$((count + 1))
+  fi
+done < <(find "${override_dir}" -type f -iname "*.tpc")
+echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
 
 base_status="Moving exact file matches"
@@ -112,7 +128,7 @@ while IFS= read -r current_file_path; do
 done < <(find "${game_dir}" -type f)
 success "Done."
 
-echo ""
+
 base_status="Moving non-GUI texture files"
 echo -n "${base_status}..."
 mkdir -p "${override_textures_dir}"
@@ -173,8 +189,7 @@ if [ "${#override_issues[@]}" -gt 0 ]; then
   warning " - Convert the above files to .tpc manually"
   warning " - > e.g. https://deadlystream.com/files/file/1152-tga2tpc/"
   warning " - Move the converted files to the ${override_dir} folder" | fold -s
-  warning " - Finalize the build again"
-  warning " - Ignore this error, then delete the ${invalid_override_textures_dir} folder" | fold -s
+  warning " - Finalize the build again, redundant texture files will be auto-removed"
   warning "================================================================================"
   echo ""
 else
