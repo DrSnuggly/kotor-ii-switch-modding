@@ -161,6 +161,11 @@ any more of these, please feel free to create a GitHub issue or a pull request.
   - `lips\907mal_loc.mod`
 - Extended Korriban arrival 1.2
   - `Lips\003EBO_loc.mod`
+- Handmaiden and Female Exile - Disciple and Male Exile Romance
+  - `lips\262TEL_loc.mod`
+  - `lips\402DXN_loc.mod`
+  - `lips\903MAL_loc.mod`
+  - `lips\localization.mod`
 
 ## Contributing
 
