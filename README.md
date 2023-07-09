@@ -12,7 +12,8 @@ issues that can occur.
 ## Features
 
 - Provide a folder structure that modding tools expect.
-- Once modding is done, restructure the game folder to what the Switch expects.
+- Once modding is done, restructure the game folder to what the Nintendo Switch
+  version of the game expects.
 - Call out potential issues along with instructions on how to fix them.
 - Easy backups and restores during the modding process, to better see where
   things went wrong.
@@ -23,8 +24,8 @@ NOTE: It's **highly** recommended to read this entire section before starting.
 
 ### Prerequisites
 
-- A computer (any OS, see notes below) to install mods with (mods cannot be
-  installed directly on the Nintendo Switch).
+- A computer to install mods with — mods cannot be installed directly on the
+  Nintendo Switch).
   - **NOTE**: this project currently ONLY works with Bash, which is available
     by default on Linux and macOS. For Windows, please use either
     [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
@@ -57,7 +58,7 @@ NOTE: It's **highly** recommended to read this entire section before starting.
    ./bin/initialize
    ```
    - This will create a folder named `0100B2C016252000`, which is the title ID
-     of the game on Switch.
+     of the game on the Nintendo Switch.
 1. On the Nintendo Switch, do the following in the nxdumptool app:
    - Navigate to **Dump installed SD card /eMMC content** | **Star Wars™️ -
      Knights of the Old Republic™️ II** | **RomFS options**.
@@ -85,7 +86,7 @@ NOTE: It's **highly** recommended to read this entire section before starting.
      expects (known mods listed below). If this occurs:
      - In the TSLPatcher window, make a note of the filepath associated with
        the error (e.g. `lips/003EBO_loc.mod`.
-     - Dump the file from your Nintendo Switch
+     - Dump the file from your Nintendo Switch.
        - You may need to look under `Localized/<language>` due to how the
          Nintendo Switch version of the game implemented other languages).
      - Transfer the dumped file to your computer and place it in the location
@@ -116,9 +117,9 @@ NOTE: It's **highly** recommended to read this entire section before starting.
    - **Make sure to pay attention to any warnings that appear.**
      - The most common warning will be texture files that aren't in the `.tpc`
        format when the Nintendo Switch version of the game already has the same
-       texture in that format. These Nintendo Switch `.tpc` files will always
-       override any `.tga` or `.dds` texture files — the solution is to convert
-       these files to `.tpc` where possible (e.g. using
+       texture in that format. These pre-existing `.tpc` files on the Nintendo
+       Switch will always override any `.tga` or `.dds` texture files — the
+       solution is to convert these files to `.tpc` where possible (e.g. using
        [tga2tpc 4.0.0](https://deadlystream.com/files/file/1152-tga2tpc/)).
 1. On the Nintendo Switch, delete the `/atmosphere/contents/0100B2C016252000`
    folder, if it exists.
