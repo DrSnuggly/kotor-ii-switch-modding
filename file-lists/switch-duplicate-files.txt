@@ -1,0 +1,4 @@
+override/textures/d2xfnt_d16x16b.tga
+override/d2xfnt_d16x16b.tga
+override/textures/d2xfnt_d16x16b.txi
+override/d2xfnt_d16x16b.txi
