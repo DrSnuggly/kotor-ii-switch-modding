@@ -5,6 +5,7 @@ title_id="0100B2C016252000"
 # root romfs folder
 game_root_base_name="romfs"
 game_dir="./${title_id}/${game_root_base_name}"
+finalized_canary="${game_dir}/.finalized"
 assets_dir="./supporting-assets" 
 # where to store backups of the romfs folder
 backup_dir="./${game_root_base_name}.backup"
@@ -56,5 +57,5 @@ function is_initialized {
   [ -d "${override_dir}" ] && return 0 || return 1
 }
 function is_finalized {
-  [ -d "${localized_dir}" ] && return 0 || return 1
+  [ -f "${finalized_canary}" ] && return 0 || return 1
 }
