@@ -1,0 +1,89 @@
+#!/bin/bash
+source "./utils/common.sh"
+
+assets_dir="./assets"
+pc_folders="${file_list_dir}/pc-folders.txt"
+
+
+echo ""
+echo -n "Running pre-flight checks... "
+# ensure the game folder exists before running the rest of the pre-flight checks
+mkdir -p "${game_dir}"
+common_preflight
+# ensure resulting folders aren't present
+if is_finalized; then
+  echo ""
+  error "Cannot initialize a finalized game folder, please restore a backup or archive before continuing. Exiting." \
+    | fold -s
+  exit 1
+fi
+# ensure requisite folders are present
+if [ ! -d "${assets_dir}" ]; then
+  echo ""
+  error "${assets_dir} cannot be found. Exiting."
+  exit 12
+fi
+# ensure requisite files are present
+if [ ! -f "${assets_dir}/dialog.tlk" ]; then
+  echo ""
+  error "${assets_dir}/dialog.tlk cannot be found. Exiting."
+  exit 22
+fi
+if [ ! -f "${assets_dir}/swplayer.ini" ]; then
+  echo ""
+  error "${assets_dir}/swplayer.ini cannot be found. Exiting."
+  exit 23
+fi
+echo "Done."
+
+
+valid_input=0
+confirmation="$1"
+while [ "${valid_input}" -eq 0 ]; do
+  # skip if the game folder has no contents
+  [ ! -n "$(ls -A "${game_dir}" 2>/dev/null)" ] && break
+
+  # prompt for input
+  if [ -z "${confirmation}" ]; then
+    echo ""
+    read -p "Remove existing game folder contents? [y/n] " confirmation
+  fi
+
+  # ensure valid input
+  case "$confirmation" in
+    [Yy]* ) confirmation="y"; break;;
+    [Nn]* ) confirmation="n"; break;;
+  esac
+  warning "Invalid input."
+  confirmation=""
+done
+echo ""
+
+# remove files
+if [[ "${confirmation}" == "y" && -d "${game_dir}" ]]; then
+  echo -n "Removing any existing game folder contents... "
+  count=0
+  while IFS= read -r target_path; do
+    rm -rf "${target_path}" && count=$((count + 1))
+  done < <(find "${game_dir}" -mindepth 1 -maxdepth 1)
+  echo -e "Deleted ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
+fi
+
+echo -n "Mirroring PC folder structure... "
+count=0
+mkdir -p "${game_dir}"
+while IFS= read -r target_unprefixed_path; do
+  # don't use mkdir -p, so we get an accurate creation count
+  mkdir "${game_dir}/${target_unprefixed_path}" 2> /dev/null && count=$((count + 1))
+done < "${pc_folders}"
+echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
+
+echo -n "Copying assets... "
+count=0
+target_path="${assets_dir}/dialog.tlk"
+cp -n "${assets_dir}/dialog.tlk" "${game_dir}/dialog.tlk" && count=$((count + 1))
+cp -n "${assets_dir}/swplayer.ini" "${game_dir}/swplayer.ini" && count=$((count + 1))
+echo -e "Copied ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+
+echo ""
+success "Finished!"
