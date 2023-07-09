@@ -1,7 +1,6 @@
 #!/bin/bash
 source "./bin/util/common.sh"
 
-assets_dir="./assets"
 pc_folders="${file_list_dir}/pc-folders.txt"
 
 
