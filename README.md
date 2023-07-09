@@ -156,11 +156,11 @@ don't hesitate to create an issue or pull request with any others you find.
 Assumes The Sith Lords: Restored Content Mod (TSLRCM) is installed. If you find
 any more of these, please feel free to create a GitHub issue or a pull request.
 
-- Extended Korriban arrival 1.2
-  - `Lips\003EBO_loc.mod`
 - Darth Sion and Male Exile Mod 1.2.3
   - `lips\702kor_loc.mod`
   - `lips\907mal_loc.mod`
+- Extended Korriban arrival 1.2
+  - `Lips\003EBO_loc.mod`
 
 ## Contributing
 
