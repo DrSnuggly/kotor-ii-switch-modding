@@ -1,5 +1,5 @@
 #!/bin/bash
-source "./utils/common.sh"
+source "./bin/util/common.sh"
 
 # game files and folder lists, as they appear in the Switch version of the game
 switch_files="${file_list_dir}/switch-files.txt"

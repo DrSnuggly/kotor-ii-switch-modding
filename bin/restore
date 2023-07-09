@@ -1,5 +1,5 @@
 #!/bin/bash
-source "./utils/common.sh"
+source "./bin/util/common.sh"
 
 title_id="0100B2C016252000"
 dev_dir="."
