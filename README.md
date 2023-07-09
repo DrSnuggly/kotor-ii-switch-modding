@@ -136,8 +136,8 @@ NOTE: It's **highly** recommended to read this entire section before starting.
 
 ## Known mods that require additional dumped files
 
-If you find any more of these, please feel free to create a GitHub issue or a
-pull request.
+Assumes The Sith Lords: Restored Content Mod (TSLRCM) is installed. If you find
+any more of these, please feel free to create a GitHub issue or a pull request.
 
 - Extended Korriban arrival 1.2
   - `Lips\003EBO_loc.mod`
