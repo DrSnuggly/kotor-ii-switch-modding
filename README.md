@@ -7,6 +7,9 @@ confusing.
 These scripts are by no means necessary, but they will help prevent common
 issues that can occur.
 
+Based on and inspired by
+[jacqylfrost](https://deadlystream.com/profile/48469-jacqylfrost/)'s work!
+
 **NOTE**: these modding tools will ONLY work for modded Nintendo Switches.
 
 ## Features
