@@ -37,6 +37,7 @@ if [ ! -f "${switch_folders}" ]; then
 fi
 success "Done."
 
+
 echo -n "Backing up to ${backup_dir}... "
 # remove existing backup
 rm -rf "${backup_dir}"
@@ -136,6 +137,7 @@ done < <(
 )
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
+
 echo -n "Copying duplicated Switch ROM files... "
 count=0
 target_filename="d2xfnt_d16x16b.txi"
@@ -169,6 +171,7 @@ while IFS= read -r source_path; do
 done < <(find "${game_dir}/Docs" -type f 2> /dev/null)
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
 
+
 echo -n "Moving StreamVoice contents to localized folders... "
 count=0
 while IFS= read -r source_path; do
@@ -181,6 +184,7 @@ while IFS= read -r source_path; do
   mv "${source_path}" "${localized_dir}/${source_unrooted_path}" && count=$((count + 1))
 done < <(find "${game_dir}/StreamVoice" -type f 2> /dev/null)
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
+
 
 echo -n "Moving lips contents to localized folders... "
 count=0
