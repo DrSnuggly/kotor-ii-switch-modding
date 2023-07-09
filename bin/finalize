@@ -74,10 +74,10 @@ while IFS= read -r target_unprefixed_path; do
   # don't use mkdir -p, so we get an accurate count
   mkdir "${game_dir}/${target_unprefixed_path}" 2> /dev/null && count=$((count + 1))
 done < "${switch_folders}"
-echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folders."
+echo -e "Created ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
 
 
-base_status="Moving all files matching a pre-existing ROM file"
+base_status="Moving exact file matches"
 echo -n "${base_status}..."
 found=0
 skipped=0
@@ -108,7 +108,8 @@ done < <(find "${game_dir}" -type f)
 success "Done."
 
 echo ""
-echo -n "Moving remaining non-GUI texture files into override textures folder... "
+base_status="Moving non-GUI texture files"
+echo -n "${base_status}..."
 mkdir -p "${override_textures_dir}"
 # iterate over all texture files and move any that shouldn't stay in the override folder
 count=0
@@ -123,7 +124,7 @@ done < <(
 )
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
 
-echo -n "Moving remaining 2DA files into override 2DA folder... "
+echo -n "Moving 2DA files into override 2DA folder... "
 mkdir -p "${override_2da_dir}"
 # move all .2da files to the root override subfolder
 count=0
@@ -155,7 +156,7 @@ fi
 
 
 echo ""
-echo -n "Moving remaining Docs contents to localized folders... "
+echo -n "Moving Docs contents to localized folders... "
 count=0
 while IFS= read -r source_path; do
   source_unrooted_path="${source_path#"${game_dir}/"}"
@@ -168,7 +169,7 @@ while IFS= read -r source_path; do
 done < <(find "${game_dir}/Docs" -type f 2> /dev/null)
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
 
-echo -n "Moving remaining StreamVoice contents to localized folders... "
+echo -n "Moving StreamVoice contents to localized folders... "
 count=0
 while IFS= read -r source_path; do
   source_unrooted_path="${source_path#"${game_dir}/"}"
@@ -181,7 +182,7 @@ while IFS= read -r source_path; do
 done < <(find "${game_dir}/StreamVoice" -type f 2> /dev/null)
 echo -e "Moved ${SUCCESS_TEXT}${count}${RESTORE_TEXT} item(s)."
 
-echo -n "Moving remaining lips contents to localized folders... "
+echo -n "Moving lips contents to localized folders... "
 count=0
 while IFS= read -r source_path; do
   source_unrooted_path="${source_path#"${game_dir}/"}"
