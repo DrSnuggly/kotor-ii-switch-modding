@@ -134,7 +134,24 @@ NOTE: It's **highly** recommended to read this entire section before starting.
      issues, but for larger mod packs, you may want to use the Hekate option
      mentioned above for faster and more reliable transfers.
 
-## Known mods that require additional dumped files
+## Known issues
+
+### Unsupported mod components
+
+Some mod components will not be fully functional in the Nintendo Switch version
+of the game due to some design choices made by Aspyr during the porting
+process. This seems to be limited to anything that modifies the GUI, but please
+don't hesitate to create an issue or pull request with any others you find.
+
+- The Sith Lords: Restored Content Mod (TSLRCM) — the mod logo will **not**
+  show in the main menu like on PC. You can determine that it's working
+  properly if:
+  - In the character generation feats selector, the feat **Mobility** is
+    available (near the bottom of the list).
+  - In game, the dead body nearest to the first door you bash will have a
+    vibrocutter instead of a vibroblade.
+
+### Mods that require additional dumped files
 
 Assumes The Sith Lords: Restored Content Mod (TSLRCM) is installed. If you find
 any more of these, please feel free to create a GitHub issue or a pull request.
