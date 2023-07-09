@@ -52,6 +52,22 @@ date > "${finalized_canary}"
 success "Done."
 
 
+echo -n "Removing unmodified supporting assets..."
+count=0
+unmodified_hash='c83b5b5f5ea8941a767b6364049b2108ef576928'
+current_hash=$(openssl sha1 -r "${game_dir}/dialog.tlk"  | cut -d ' ' -f 1)
+if [ "${unmodified_hash}" == "${current_hash}" ]; then
+  rm "${game_dir}/dialog.tlk" && count=$((count + 1))
+fi
+unmodified_hash='507105bc491dec3edf7374052b87fdabe44b0636'
+current_hash=$(openssl sha1 -r "${game_dir}/swplayer.ini"  | cut -d ' ' -f 1)
+if [ "${unmodified_hash}" == "${current_hash}" ]; then
+  rm "${game_dir}/swplayer.ini" && count=$((count + 1))
+fi
+echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} file(s)."
+
+
+echo ""
 echo -n "Mirroring Switch ROM folder structure... "
 count=0
 while IFS= read -r target_unprefixed_path; do
