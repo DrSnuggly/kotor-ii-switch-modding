@@ -41,10 +41,10 @@ NOTE: It's **highly** recommended to read this entire section before starting.
   Nintendo Switch to extract some game files needed for some mods.
 - A way to interact with and transfer files to and from the Nintendo Switch.
   Examples:
-  - (ftpd)[https://github.com/mtheall/ftpd]
+  - [ftpd](https://github.com/mtheall/ftpd)
   - Hekate's tool to mount the SD Card to a PC, under **Tools** | **USB Tools**
     | **SD Card** (requires rebooting the Nintendo Switch into Hekate).
-  - (NX-Shell)[https://github.com/joel16/NX-Shell] (only for interacting with
+  - [NX-Shell](https://github.com/joel16/NX-Shell) (only for interacting with
     existing files)
 
 ### Pre-flight
