@@ -199,8 +199,8 @@ echo ""
 echo -n "Cleaning up empty folders... "
 count=0
 while IFS= read -r target_folder; do
-  rm -r "${target_folder}" && count=$((count + 1))
-done < <(find "${game_dir}" -mindepth 1 -type d -empty)
+  count=$((count + 1))
+done < <(find "${game_dir}" -type d -empty -delete -print)
 echo -e "Removed ${SUCCESS_TEXT}${count}${RESTORE_TEXT} folder(s)."
 
 
