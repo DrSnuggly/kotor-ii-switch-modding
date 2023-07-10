@@ -10,8 +10,9 @@ confusing, and less cumbersome.
 Mod (TSLRCM) on Nintendo Switch!**
 
 These scripts are by no means necessary, but they will help prevent common
-issues that can occur, especially when dealing with `.tpc` files and localized
-folders on the Nintendo Switch vs. normal KotOR 2 overrides.
+issues that can occur, especially when dealing with Aspyr's odd file structure
+in their port, the port's built-in `.tpc` override files, and the localized
+folder structure on the Nintendo Switch.
 
 Based on and inspired by
 [jacqylfrost](https://deadlystream.com/profile/48469-jacqylfrost/)'s work!
