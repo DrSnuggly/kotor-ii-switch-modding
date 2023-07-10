@@ -136,20 +136,12 @@ NOTE: It's **highly** recommended to read this entire section before starting.
 
 ## Known issues
 
-### Unsupported mod components
+### Platform-specific issues
 
-Some mod components will not be fully functional in the Nintendo Switch version
-of the game due to some design choices made by Aspyr during the porting
-process. This seems to be limited to anything that modifies the GUI, but please
-don't hesitate to create an issue or pull request with any others you find.
-
-- The Sith Lords: Restored Content Mod (TSLRCM) — the mod logo will **not**
-  show in the main menu like on PC. You can determine that it's working
-  properly if:
-  - In the character generation feats selector, the feat **Mobility** is
-    available (near the bottom of the list).
-  - In game, the dead body nearest to the first door you bash will have a
-    vibrocutter instead of a vibroblade.
+I've been able to resolve the platform-specific issues I've encountered so far
+(mainly with TSLRCM), but since I'm just one person, there are likely more that
+I've missed. Please don't hesitate to create an issue or pull request with any
+of these platform-specific issues you find.
 
 ### Mods that require additional dumped files
 
