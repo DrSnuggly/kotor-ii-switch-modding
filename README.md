@@ -1,5 +1,7 @@
 # KotOR II Switch modding tools
 
+![screenshot of TSLRCM working on the Nintendo Switch](https://github.com/DrSnuggly/kotor-ii-switch-modding/raw/main/docs/switch-tslrcm-screenshot.jpg)
+
 This project is a group of tools to make modding the Nintendo Switch version of
 Star Wars: Knights of the Old Republic II (aka. KotOR II) easier, less
 confusing, and less cumbersome.
