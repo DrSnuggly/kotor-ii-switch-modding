@@ -6,6 +6,9 @@ This project is a group of tools to make modding the Nintendo Switch version of
 Star Wars: Knights of the Old Republic II (aka. KotOR II) easier, less
 confusing, and less cumbersome.
 
+**With these tools, we can now finally enjoy The Sith Lords: Restored Content
+Mod (TSLRCM) on Nintendo Switch!**
+
 These scripts are by no means necessary, but they will help prevent common
 issues that can occur, especially when dealing with `.tpc` files and localized
 folders on the Nintendo Switch vs. normal KotOR 2 overrides.
