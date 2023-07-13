@@ -144,10 +144,16 @@ NOTE: It's **highly** recommended to read this entire section before starting.
 
 ### Platform-specific issues
 
-I've been able to resolve the platform-specific issues I've encountered so far
-(mainly with TSLRCM), but since I'm just one person, there are likely more that
-I've missed. Please don't hesitate to create an issue or pull request with any
-of these platform-specific issues you find.
+- The Sith Lords Restored Content Mod (TSLRCM)
+  - Button prompts are either missing or showing buttons for the incorrect
+    platform
+    - Fix: after installing this mod, use the `dialog.tlk` in the
+    `Fixed dialog for TSLRCM on Nintendo Switch.zip` attached to the latest
+    release — thanks,
+    [seriouslyunderappreciated](https://github.com/seriouslyunderappreciated)!
+
+There are likely more than what is listed here. Please don't hesitate to create
+an issue or pull request with any of these platform-specific issues you find.
 
 ### Mods that require additional dumped files
 
