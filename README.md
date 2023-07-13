@@ -142,7 +142,7 @@ NOTE: It's **highly** recommended to read this entire section before starting.
 
 ## Known issues
 
-### Platform-specific issues
+### Platform-specific known issues and fixes
 
 - The Sith Lords Restored Content Mod (TSLRCM)
   - Button prompts are either missing or showing buttons for the incorrect
